@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "CAutoStick.h"
 
 
@@ -16,7 +16,7 @@ CStickWindow::CStickWindow(){
 /// </summary>
 void CStickWindow::OnTimer(){
     if(!m_hWnd) return;
-    // ??D?���?��
+    // 窗口自动收缩
     if(m_bShink && !m_bShinked){
         int iScreenWidth=GetScreenWidth();
         RECT rTemp;
@@ -50,7 +50,7 @@ void CStickWindow::OnTimer(){
             ::SetWindowPos(m_hWnd,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE);
         }
     }
-    // ��??��??��?
+    // 恢复窗口显示
     if(m_bShink && m_bShinked){
         RECT rTemp;
         CRect r;
@@ -173,7 +173,7 @@ void CStickWindow::SaveConfig(CIniFile* a_pConfig){
         } else{
         }
         CString sGroupName=Format(_T("Window%dPos"),GetID());
-        a_pConfig->SetVarInt(sGroupName,_T("WindowMax"),0);   // ?a��?����?a3��D����?3?o����??? windows ����???T����?��D?��?2??����?����?�䨮?�����䨬? 2018.12.28
+        a_pConfig->SetVarInt(sGroupName,_T("WindowMax"),0);   // 不保存最大化的状态，因为windows恢复的窗口大小和位置不正确 2018.12.28
         if(r.Width()>0 && r.Height()>0){
             a_pConfig->SetVarInt(sGroupName,_T("Left"),r.left);
             a_pConfig->SetVarInt(sGroupName,_T("Top"),r.top);

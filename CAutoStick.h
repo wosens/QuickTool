@@ -1,31 +1,31 @@
-#pragma once
+ï»¿#pragma once
 
 //////////////////////////////////////////////////////////////////////////
-// ¹¦ÄÜ£ºÌù±ß´°¿ÚÀà
-// ×÷Õß£ºÃ·ÎÄº£
-// ÈÕÆÚ£º2024.7.10
-// Ê¹ÓÃËµÃ÷£º
-// ÏÈÔÚ´°¿Ú³õÊ¼»¯º¯Êı´´½¨Ò»¸ö CStickWindow ¶ÔÏó£¬È»ºóµ÷ÓÃ SetWindow º¯ÊıÉèÖÃ´°¿Ú¾ä±ú£¬Ò»¶¨ÒªÈ·±£´°¿ÚÒÑ¾­´´½¨
-// È»ºóµ÷ÓÃ AddWindow º¯ÊıÌí¼Óµ½ CAutoStick ¶ÔÏóÖĞ
-// ÈçÏÂ£º
+// åŠŸèƒ½ï¼šè´´è¾¹çª—å£ç±»
+// ä½œè€…ï¼šæ¢…æ–‡æµ·
+// æ—¥æœŸï¼š2024.7.10
+// ä½¿ç”¨è¯´æ˜ï¼š
+// å…ˆåœ¨çª—å£åˆå§‹åŒ–å‡½æ•°åˆ›å»ºä¸€ä¸ª CStickWindow å¯¹è±¡ï¼Œç„¶åè°ƒç”¨ SetWindow å‡½æ•°è®¾ç½®çª—å£å¥æŸ„ï¼Œä¸€å®šè¦ç¡®ä¿çª—å£å·²ç»åˆ›å»º
+// ç„¶åè°ƒç”¨ AddWindow å‡½æ•°æ·»åŠ åˆ° CAutoStick å¯¹è±¡ä¸­
+// å¦‚ä¸‹ï¼š
 // CStickWindow* pWindows=new CStickWindow();
 // pWindows->SetWindow(m_hWnd);
 // m_asStick.AddWindow(pWindows);
 // SetTimer(1,200,NULL); 
-// È»ºó´°¿ÚÏÔÊ¾º¯ÊıÖĞµ÷ÓÃ LoadConfig º¯Êı¡£×¢Òâ£º×îºÃÖ»µ÷ÓÃÒ»´Î²»Òª¶à´Îµ÷ÓÃ
-// ÔÚ´°¿Ú¹Ø±Õº¯ÊıÖĞµ÷ÓÃ SaveConfig º¯Êı
-// ÔÚ´°¿ÚµÄ OnTimer º¯ÊıÖĞµ÷ÓÃ CAutoStick ¶ÔÏóµÄ OnTimer º¯Êı
-// ÔÚ´°¿ÚµÄ OnMove º¯ÊıÖĞµ÷ÓÃ CAutoStick ¶ÔÏóµÄ OnMove º¯Êı
-// ÔÚ´°¿ÚµÄ OnSize º¯ÊıÖĞµ÷ÓÃ CAutoStick ¶ÔÏóµÄ OnSize º¯Êı
+// ç„¶åçª—å£æ˜¾ç¤ºå‡½æ•°ä¸­è°ƒç”¨ LoadConfig å‡½æ•°ã€‚æ³¨æ„ï¼šæœ€å¥½åªè°ƒç”¨ä¸€æ¬¡ä¸è¦å¤šæ¬¡è°ƒç”¨
+// åœ¨çª—å£å…³é—­å‡½æ•°ä¸­è°ƒç”¨ SaveConfig å‡½æ•°
+// åœ¨çª—å£çš„ OnTimer å‡½æ•°ä¸­è°ƒç”¨ CAutoStick å¯¹è±¡çš„ OnTimer å‡½æ•°
+// åœ¨çª—å£çš„ OnMove å‡½æ•°ä¸­è°ƒç”¨ CAutoStick å¯¹è±¡çš„ OnMove å‡½æ•°
+// åœ¨çª—å£çš„ OnSize å‡½æ•°ä¸­è°ƒç”¨ CAutoStick å¯¹è±¡çš„ OnSize å‡½æ•°
 //////////////////////////////////////////////////////////////////////////
 
 
-// Ìù±ß´°¿ÚÀà 2024.7.9
+// è´´è¾¹çª—å£ç±» 2024.7.9
 class CStickWindow:public CIDItem{
 public:
     CStickWindow();
     virtual ~CStickWindow(){};
-    virtual bool Assign(const CIDItemBase& AOther){     // ¿½±´º¯Êı(²»ÄÜÉèÎª´¿Ğé·½·¨£¬·ñÔò ID ²»ÄÜ±»ÉèÖµ)
+    virtual bool Assign(const CIDItemBase& AOther){     // æ‹·è´å‡½æ•°(ä¸èƒ½è®¾ä¸ºçº¯è™šæ–¹æ³•ï¼Œå¦åˆ™ ID ä¸èƒ½è¢«è®¾å€¼)
         CStickWindow* pOther=(CStickWindow*)&AOther;
         m_rOrig=pOther->m_rOrig;
         m_rCurr=pOther->m_rCurr;
@@ -37,8 +37,8 @@ public:
         m_hWnd=pOther->m_hWnd;
         return true;
     }
-    virtual CIDItemBase* CreateInstance(){ return new CStickWindow; };// ´´½¨¸ÃÀàµÄÊµÀı
-    virtual LPCTSTR GetClassName(){ GET_ITEM_CLASS_NAME(CStickWindow); };   // »ñµÃÀàÃû
+    virtual CIDItemBase* CreateInstance(){ return new CStickWindow; };// åˆ›å»ºè¯¥ç±»çš„å®ä¾‹
+    virtual LPCTSTR GetClassName(){ GET_ITEM_CLASS_NAME(CStickWindow); };   // è·å¾—ç±»å
 
     virtual void OnTimer();
     virtual void OnMove(int a_iX,int a_iY);
@@ -47,18 +47,18 @@ public:
     virtual void SaveConfig(CIniFile* a_pConfig);
     virtual void SetWindow(HWND a_hWnd);
 protected:
-    CRect m_rOrig;      // Ô­Ê¼µÄ´óĞ¡ºÍÎ»ÖÃ(Ö»ÄÜÊÇÕı³£×´Ì¬) 2022.3.10
-    CRect m_rCurr;      // µ±Ç°µÄ´óĞ¡ºÍÎ»ÖÃ(ÓĞ¿ÉÄÜÊÇËõĞ¡ºóµÄ×´Ì¬£¬Ò²ÓĞ¿ÉÄÜÊÇÕı³£×´Ì¬) 2022.3.10
-    bool  m_bShink;     // ÊÇ·ñ´¦ÓÚËõĞ¡×´Ì¬ 2022.3.10
-    bool  m_bShinked;   // ÊÇ·ñÒÑ¾­ËõĞ¡ 2022.3.10
-    bool  m_bMoveing;   // ÕıÔÚÒÆ¶¯´°¿Ú 2022.3.10
-    bool  m_bFirst;     // µÚÒ»´Îµ÷Õû´°¿Ú 2022.3.12
-    CSize m_szOrig;     // Ô­Ê¼´°¿Ú´óĞ¡  2022.3.12
-    HWND  m_hWnd;       // ´°¿Ú¾ä±ú
+    CRect m_rOrig;      // åŸå§‹çš„å¤§å°å’Œä½ç½®(åªèƒ½æ˜¯æ­£å¸¸çŠ¶æ€) 2022.3.10
+    CRect m_rCurr;      // å½“å‰çš„å¤§å°å’Œä½ç½®(æœ‰å¯èƒ½æ˜¯ç¼©å°åçš„çŠ¶æ€ï¼Œä¹Ÿæœ‰å¯èƒ½æ˜¯æ­£å¸¸çŠ¶æ€) 2022.3.10
+    bool  m_bShink;     // æ˜¯å¦å¤„äºç¼©å°çŠ¶æ€ 2022.3.10
+    bool  m_bShinked;   // æ˜¯å¦å·²ç»ç¼©å° 2022.3.10
+    bool  m_bMoveing;   // æ­£åœ¨ç§»åŠ¨çª—å£ 2022.3.10
+    bool  m_bFirst;     // ç¬¬ä¸€æ¬¡è°ƒæ•´çª—å£ 2022.3.12
+    CSize m_szOrig;     // åŸå§‹çª—å£å¤§å°  2022.3.12
+    HWND  m_hWnd;       // çª—å£å¥æŸ„
 };
 
-// ×Ô¶¯ÌùÏòÆÁÄ»±ßÔµÀà 2024.7.9
-// Ê¹ÓÃ·½·¨
+// è‡ªåŠ¨è´´å‘å±å¹•è¾¹ç¼˜ç±» 2024.7.9
+// ä½¿ç”¨æ–¹æ³•
 class CAutoStick{
 public:
     CAutoStick();
@@ -71,6 +71,6 @@ public:
     virtual void LoadConfig(CString a_sConfigFile);
     virtual void SaveConfig(CString a_sConfigFile);
 protected:
-    CItemList m_aWindows;       // StickWindow ¶ÔÏóÁĞ±í
+    CItemList m_aWindows;       // StickWindow å¯¹è±¡åˆ—è¡¨
 };
 

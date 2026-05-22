@@ -396,6 +396,8 @@ BOOL CQuickToolDlg::OnInitDialog()
     SetIcon(m_hIcon, TRUE);			// 设置大图标
     SetIcon(m_hIcon, FALSE);		// 设置小图标
 
+    SetWindowText(Format(_T("%s %s"), DEF_APPLICATION_TITLE, DEF_APPLICATION_VER));
+
     LoadConfig();
     SetTimer(1,200,NULL);
     m_tvwFolder.SetOwner(this);
