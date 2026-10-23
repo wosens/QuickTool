@@ -55,6 +55,9 @@ BOOL CInputBox::OnInitDialog()
 
     SetWindowText(m_sCaption);
     GetDlgItem(IDC_LBL_TITLE_INP)->SetWindowText(m_sTitle);
+    // 按钮文本随界面语言（模板为中文，英文界面同步替换）2026.10.22
+    GetDlgItem(IDOK)->SetWindowText(QtLS(QT_TXT_BTN_OK));
+    GetDlgItem(IDCANCEL)->SetWindowText(QtLS(QT_TXT_BTN_CANCEL));
 	
 	
 	return TRUE;  // return TRUE unless you set the focus to a control

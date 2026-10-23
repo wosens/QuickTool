@@ -159,7 +159,7 @@ void CStickWindow::LoadConfig(CIniFile* a_pConfig){
         m_szOrig=r.Size();
     }
 
-    SetWindowLong(m_hWnd,GWL_EXSTYLE,GetWindowLong(m_hWnd,GWL_EXSTYLE)^0x80000);
+    SetWindowLong(m_hWnd,GWL_EXSTYLE,GetWindowLong(m_hWnd,GWL_EXSTYLE)|WS_EX_LAYERED);
     ::SetLayeredWindowAttributes(m_hWnd,RGB(0,0,0),255,LWA_ALPHA);
     m_bShinked=(a_pConfig->GetInt(sGroupName,_T("Shink"),0)==1);
 }

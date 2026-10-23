@@ -12,15 +12,17 @@ static char THIS_FILE[]=__FILE__;
 // Construction/Destruction
 //
 
-CBrowseForFolder::CBrowseForFolder(const HWND hParent,LPCTSTR strTitle,LPCTSTR strPath)
+CBrowseForFolder::CBrowseForFolder(const HWND a_hParent, LPCTSTR a_lpszTitle, LPCTSTR a_lpszPath)
 {
+	ZeroMemory(&m_bi, sizeof(m_bi));
+	m_szSelected[0] = _T('\0');
 	m_hwnd = NULL;
-	SetOwner(hParent);
+	SetOwner(a_hParent);
 	SetRoot(NULL);
-	SetTitle(strTitle);
-	if (strPath!=NULL)
+	SetTitle(a_lpszTitle);
+	if (a_lpszPath != NULL)
 	{
-		m_strPath=strPath;
+		m_strPath = a_lpszPath;
 	}
 	m_bi.lpfn = BrowseCallbackProc;
 	m_bi.lParam = (DWORD_PTR)this;
@@ -46,17 +48,17 @@ void CBrowseForFolder::SetOwner(const HWND hwndOwner)
 	m_bi.hwndOwner = hwndOwner;
 }
 
-void CBrowseForFolder::SetRoot(const LPITEMIDLIST pidl)
+void CBrowseForFolder::SetRoot(LPCITEMIDLIST a_pidl)
 {
 	if (m_hwnd != NULL)
 		return;
 
-	m_bi.pidlRoot = pidl;
+	m_bi.pidlRoot = a_pidl;
 }
 
 CString CBrowseForFolder::GetTitle() const
 {
-	return m_bi.lpszTitle;
+	return m_strTitle;
 }
 
 void CBrowseForFolder::SetTitle(const CString& strTitle)
@@ -64,8 +66,8 @@ void CBrowseForFolder::SetTitle(const CString& strTitle)
 	if (m_hwnd != NULL)
 		return;
 
-	_tcscpy_s(m_strTitle,1000, strTitle);
-	m_bi.lpszTitle = m_strTitle;
+	m_strTitle = strTitle;
+	m_bi.lpszTitle = m_strTitle.GetString();
 }
 
 bool CBrowseForFolder::SetTitle(const int nTitle)
@@ -108,6 +110,12 @@ bool CBrowseForFolder::SelectFolder()
 			bRet = true;
 			m_strPath = m_szSelected;
 		}
+		else
+		{
+			// Path conversion failed: drop the stale buffer so
+			// GetSelectedFolder does not report an old selection.
+			m_szSelected[0] = _T('\0');
+		}
 
 		LPMALLOC pMalloc;
 		//Retrieve a pointer to the shell's IMalloc interface
@@ -118,6 +126,13 @@ bool CBrowseForFolder::SelectFolder()
 			// release the shell's IMalloc interface
 			(void)pMalloc->Release();
 		}
+	}
+	else
+	{
+		// User cancelled: clear stale state so GetSelectedFolder
+		// does not return the previous successful selection.
+		m_szSelected[0] = _T('\0');
+		m_strPath.Empty();
 	}
 	m_hwnd = NULL;
 
@@ -132,9 +147,9 @@ void CBrowseForFolder::OnInit() const
 	}
 }
 
-void CBrowseForFolder::OnSelChanged(const LPITEMIDLIST pidl) const
+void CBrowseForFolder::OnSelChanged(LPCITEMIDLIST a_pidl) const
 {
-	(void)pidl;
+	(void)a_pidl;
 }
 
 void CBrowseForFolder::EnableOK(const bool bEnable) const
@@ -145,12 +160,12 @@ void CBrowseForFolder::EnableOK(const bool bEnable) const
 	(void)SendMessage(m_hwnd, BFFM_ENABLEOK, bEnable, NULL);
 }
 
-void CBrowseForFolder::SetSelection(const LPITEMIDLIST pidl) const
+void CBrowseForFolder::SetSelection(LPCITEMIDLIST a_pidl) const
 {
 	if (m_hwnd == NULL)
 		return;
 
-	(void)SendMessage(m_hwnd, BFFM_SETSELECTION, FALSE, (DWORD_PTR)pidl);
+	(void)SendMessage(m_hwnd, BFFM_SETSELECTION, FALSE, (DWORD_PTR)a_pidl);
 }
 
 void CBrowseForFolder::SetSelection(const CString& strPath) const
@@ -176,7 +191,7 @@ int __stdcall CBrowseForFolder::BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM 
 	if (uMsg == BFFM_INITIALIZED)
 		pbff->OnInit();
 	else if (uMsg == BFFM_SELCHANGED)
-		pbff->OnSelChanged((const LPITEMIDLIST)lParam);
+		pbff->OnSelChanged((LPCITEMIDLIST)lParam);
 	
 	return 0;
 }

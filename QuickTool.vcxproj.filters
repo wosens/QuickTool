@@ -84,6 +84,9 @@
     <ClInclude Include="..\..\..\..\Company\Project\40.三化\模块化\Sun Standard Class Library\Include\SunDirectDraw.h">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\Company\Project\40.三化\模块化\Sun Standard Class Library\Include\SunExifRotate.h">
+      <Filter>Include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\Company\Project\40.三化\模块化\Sun Standard Class Library\Include\SunItemList.h">
       <Filter>Include</Filter>
     </ClInclude>
@@ -137,6 +140,7 @@
     <ClCompile Include="CAutoStick.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="EdgeBarWnd.cpp"><Filter>源文件</Filter></ClCompile>
     <ClCompile Include="..\..\..\..\Company\Project\40.三化\模块化\Sun Standard Class Library\Include\Src\SunControlExt.cpp">
       <Filter>Include\Src</Filter>
     </ClCompile>
@@ -174,6 +178,9 @@
       <Filter>Include\Src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\Company\Project\40.三化\模块化\Sun Standard Class Library\Include\Src\SunDirectDraw.cpp">
+      <Filter>Include\Src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Company\Project\40.三化\模块化\Sun Standard Class Library\Include\Src\SunExifRotate.cpp">
       <Filter>Include\Src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\Company\Project\40.三化\模块化\Sun Standard Class Library\Include\Src\SunPublic.cpp">

@@ -52,7 +52,7 @@ void CDlgPathManage::OnBnClickedOk()
 void CDlgPathManage::OnBnClickedBtnDel()
 {
     if(m_lstPath.GetSelCount()>0){
-        if(AfxMessageBox(_T("真的要删除吗？"),MB_ICONQUESTION|MB_YESNO)==IDYES){
+        if(AfxMessageBox(QtLS(QT_TXT_MSG_DEL_PATHS),MB_ICONQUESTION|MB_YESNO)==IDYES){
             for(int i=m_lstPath.GetCount()-1;i>=0;i--){
                 if(m_lstPath.GetSel(i)){
                     m_lstPath.DeleteString(i);
@@ -70,6 +70,11 @@ BOOL CDlgPathManage::OnInitDialog()
     for(int i=0;i<m_pPath->GetSize();i++){
         m_lstPath.AddString(m_pPath->GetAt(i));
     }
+    // 界面文本随全局语言（模板为中文）2026.10.22
+    SetWindowText(QtLS(QT_TXT_DLG_PATH_MGR));
+    GetDlgItem(IDOK)->SetWindowText(QtLS(QT_TXT_BTN_OK));
+    GetDlgItem(IDCANCEL)->SetWindowText(QtLS(QT_TXT_BTN_CANCEL));
+    GetDlgItem(IDC_BTN_DEL)->SetWindowText(QtLS(QT_TXT_BTN_DELETE));
     ::SendMessage(m_lstPath.GetSafeHwnd(),LB_SETHORIZONTALEXTENT,255,0);
 
     return TRUE;  // return TRUE unless you set the focus to a control

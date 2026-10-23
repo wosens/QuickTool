@@ -1,28 +1,31 @@
 //////////////////////////////////////////////////////////////////////
 //
-// ShellBrowser.h: interface for the CShellBrowser class.
+// BrowseForFolder.h: interface for the CBrowseForFolder class.
 //
 // Copyright 1998 Scott D. Killen
 //
 //////////////////////////////////////////////////////////////////////
 
-#ifndef __SHELLBROWSER_H__
-#define __SHELLBROWSER_H__
+#ifndef BROWSEFORFOLDER_H_
+#define BROWSEFORFOLDER_H_
 
 #if _MSC_VER >= 1000
 #pragma once
 #endif // _MSC_VER >= 1000
 
+#include <afx.h>      // CString
+#include <shlobj.h>   // BROWSEINFO, LPCITEMIDLIST, SHBrowseForFolder
+
 
 //////////////////////////////////////////////////////////////////////
 //
-// CShellBrowser
+// CBrowseForFolder
 //
 
 class CBrowseForFolder
 {
 public:
-	CBrowseForFolder(const HWND hParent, LPCTSTR  strTitle,LPCTSTR strPath=NULL);
+	CBrowseForFolder(const HWND a_hParent, LPCTSTR a_lpszTitle, LPCTSTR a_lpszPath = NULL);
 
 	virtual ~CBrowseForFolder();
 
@@ -36,7 +39,7 @@ public:
 	// SHGetSpecialFolderLocation.  This can be set to NULL to use the Virtual Folder
 	// that represents the Windows Desktop.
 	//
-	void SetRoot(const LPITEMIDLIST pidl);
+	void SetRoot(LPCITEMIDLIST a_pidl);
 
 	//
 	// Access a string that is displayed above the tree view control in the dialog box.
@@ -108,7 +111,7 @@ protected:
 	// the LPITEMIDLIST of the new selection.  Use SHGetPathFromIDList to retrieve the
 	// path of the selection.
 	//
-	virtual void OnSelChanged(const LPITEMIDLIST pidl) const;
+	virtual void OnSelChanged(LPCITEMIDLIST a_pidl) const;
 
 	//
 	// Call EnableOK to enable the OK button on the active dialog.  If bEnable is true
@@ -126,7 +129,7 @@ protected:
 	// NOTE -- This function should only be called within overrides of OnInit and
 	// OnSelChanged.
 	//
-	void SetSelection(const LPITEMIDLIST pidl) const;
+	void SetSelection(LPCITEMIDLIST a_pidl) const;
 	void SetSelection(const CString& strPath) const;
 
 	//
@@ -145,7 +148,7 @@ private:
 
 	BROWSEINFO m_bi;
 	_TCHAR m_szSelected[MAX_PATH];
-    _TCHAR m_strTitle[1000];
+	CString m_strTitle;
 	CString m_strPath;
 	HWND m_hwnd;
 };
@@ -160,4 +163,4 @@ inline int CBrowseForFolder::GetImage() const
 	return m_bi.iImage;
 }
 
-#endif // __SHELLBROWSER_H__
+#endif // BROWSEFORFOLDER_H_
