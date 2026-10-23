@@ -9,3 +9,14 @@ Execute
 Release
 /QuickTool.VC.db
 /QuickTool.sdf
+.vs/
+x64/
+ipch/
+*.aps
+*.suo
+*.user
+*.log
+debug.log
+.autodev/
+.codereview/
+.launcher/
