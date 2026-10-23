@@ -43,7 +43,7 @@ typedef list<CString> CListString;
 
 
 const CString DEF_APPLICATION_TITLE =_T("闪现");      // 软件名中文来源；英文模式经 QtAppTitle() 显示"QuickTool" 2026.10.22
-const CString DEF_APPLICATION_VER   =_T("v1.0.43");   // 保留 v 前缀，AboutVersionBadge 已 TrimLeft("vV") 适配 2026.10.22
+const CString DEF_APPLICATION_VER   =_T("v1.0.45");   // 保留 v 前缀，AboutVersionBadge 已 TrimLeft("vV") 适配 2026.10.22
 CString QtAppTitle();  // 按当前语言返回软件名：英文"QuickTool"/中文"闪现"（主窗标题/标题栏 tooltip/关于窗共用）2026.10.22
 
 

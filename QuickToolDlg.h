@@ -245,6 +245,8 @@ public:
     afx_msg void OnTimer(UINT_PTR nIDEvent);
     void UpdateEdgeShrink();            // 贴边收缩状态机（隐藏主窗口+边条把手）2026.10.21
     LRESULT OnEdgeBarNotify(WPARAM wParam, LPARAM lParam);  // 边条唤出通知（同步）2026.10.21
+    void ExpandAtEdge(int a_iX,int a_iY,int a_iW,int a_iH); // 贴边唤出展开：TOPMOST 置前不激活（全屏让位）2026.10.23
+    void EnsureMainTopmost(BOOL a_bAllow);  // 展开期主窗置顶维护（状态不符才动窗口）2026.10.23
     void TrackMouseLeave();             // 注册主窗口 WM_MOUSELEAVE 2026.10.21
     afx_msg void OnMouseLeave();        // 鼠标离窗→收缩 2026.10.21
     afx_msg void OnMenuAddPath();

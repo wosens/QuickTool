@@ -1772,6 +1772,43 @@ int CQuickToolDlg::GetStickEdge(){
     return 0;
 }
 
+// 贴边唤出展开 2026.10.23：定位+显示+整窗立即重绘（关重绘防白闪，唤出路径共用）。
+// 置前策略 2026.10.24：唤出即激活。实测本机存在窗口管控，对"不激活的纯 Z 序提升"
+// （SWP_NOACTIVATE 的 SetWindowPos）会间歇性静默拦截——返回成功却既不进 TOPMOST 也不动
+// Z 序，主窗停在普通层深处被普通窗口遮挡（用户两次实测复现）；四组对照实验证实仅
+// "显示+置顶"原子组合偶被放行、纯提升稳定被拒。激活是系统级置前保证（激活窗口必进
+// 前台 Z 序顶部），且鼠标碰把手即使用意图（边条刚收到真实鼠标输入，激活自身合法），
+// 故非全屏唤出一律激活置前，普通窗口不可能再遮挡。
+// 首选升 TOPMOST 层最前；若 TOPMOST 被环境静默拒绝（样式位不亮），兜底 HWND_TOP 压到
+// 普通层最前；前台有 DX 独占全屏程序时仅普通层显示让位（不激活不打断全屏），与边条同策略
+void CQuickToolDlg::ExpandAtEdge(int a_iX,int a_iY,int a_iW,int a_iH){
+    BOOL bFull=CEdgeBarWnd::IsForegroundFullScreen(m_hWnd);
+    SetRedraw(FALSE);
+    if(bFull){
+        SetWindowPos(&wndTop,a_iX,a_iY,a_iW,a_iH,SWP_NOACTIVATE|SWP_SHOWWINDOW|SWP_NOREDRAW);
+    }else{
+        SetWindowPos(&wndTopMost,a_iX,a_iY,a_iW,a_iH,SWP_SHOWWINDOW|SWP_NOREDRAW);
+        if(!(GetExStyle()&WS_EX_TOPMOST))
+            SetWindowPos(&wndTop,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE);   // TOPMOST 被拒→普通层最前兜底
+        SetForegroundWindow();          // 激活置前：唤出即使用的系统级保证 2026.10.24
+    }
+    SetRedraw(TRUE);
+    RedrawWindow(NULL,NULL,RDW_INVALIDATE|RDW_ERASE|RDW_ALLCHILDREN|RDW_UPDATENOW);
+}
+
+// 主窗口展开期置前维护 2026.10.23：贴边展开期间窗口被系统/其它窗口压下去即顶回，
+// 防止唤出后又被别的软件窗口盖住；a_bAllow=FALSE（DX 独占全屏/收缩）摘除 TOPMOST
+// 让位还原常态。仅在状态与目标不符时才动窗口，供 200ms 周期调用不闪烁
+void CQuickToolDlg::EnsureMainTopmost(BOOL a_bAllow){
+    BOOL bTop=(GetExStyle()&WS_EX_TOPMOST)!=0;
+    if(a_bAllow && !bTop){
+        SetWindowPos(&wndTopMost,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE);
+        if(!(GetExStyle()&WS_EX_TOPMOST))
+            SetWindowPos(&wndTop,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE); // TOPMOST 被拒→普通层最前兜底
+    }
+    else if(!a_bAllow && bTop) SetWindowPos(&wndNoTopMost,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE);
+}
+
 void CQuickToolDlg::UpdateEdgeShrink(){
     if(!m_edgeBar.GetSafeHwnd()) return;
     CRect rcWin;
@@ -1779,7 +1816,8 @@ void CQuickToolDlg::UpdateEdgeShrink(){
     int iScreenWidth=GetScreenWidth();
     int iEdge=GetStickEdge();                           // -1=贴左缘，1=贴右缘，0=未贴
     if(iEdge==0){
-        // 未贴边：确保边条隐藏、主窗口可见
+        // 未贴边：确保边条隐藏、主窗口可见，并还原非置顶（唤出期 TOPMOST 在此兜底还原）2026.10.23
+        EnsureMainTopmost(FALSE);
         if(m_edgeBar.IsBarVisible()) m_edgeBar.HideBar();
         if(!IsWindowVisible()) ShowWindow(SW_SHOW);
         return;
@@ -1795,7 +1833,8 @@ void CQuickToolDlg::UpdateEdgeShrink(){
         if(iEdge<0) rcSelf.left-=12;                    // 左缘：左缘放 12px（覆盖边条热区）
         else        rcSelf.right+=12;                   // 右缘：右缘放 12px
         if(rcSelf.PtInRect(pnt)) return;                // 鼠标还在窗口/边条区域，保持
-        // 鼠标已离开：收缩
+        // 鼠标已离开：收缩（还原非置顶，不把唤出期的 TOPMOST 带进常态）2026.10.23
+        EnsureMainTopmost(FALSE);
         ShowWindow(SW_HIDE);
         m_edgeBar.ShowBar();
         return;
@@ -1809,18 +1848,18 @@ void CQuickToolDlg::UpdateEdgeShrink(){
         if(iY<0) iY=0;
         int iSH=GetScreenHeight();
         if(iY>iSH-iH) iY=iSH-iH;
-        // 丝滑唤出：显示前关重绘→原子定位+显示→重开重绘并整窗立即重画，
-        // 避免先露出默认白底再重绘造成的闪烁 2026.10.21
-        SetRedraw(FALSE);
-        SetWindowPos(&wndTop,iX,iY,iW,iH,SWP_NOACTIVATE|SWP_SHOWWINDOW|SWP_NOREDRAW);   // 临时置到普通层最前（不激活不抢焦点，点别处仍会被盖回）2026.10.22
-        SetRedraw(TRUE);
-        RedrawWindow(NULL,NULL,RDW_INVALIDATE|RDW_ERASE|RDW_ALLCHILDREN|RDW_UPDATENOW);
+        // 丝滑唤出（关重绘→原子定位+显示→重开重绘并整窗立即重画）+ 置顶唤出 2026.10.23
+        ExpandAtEdge(iX,iY,iW,iH);
         m_edgeBar.HideBar();
     }
 }
 
 void CQuickToolDlg::OnTimer(UINT_PTR nIDEvent){
     UpdateEdgeShrink();
+    // 唤出保持期主窗置顶维护 2026.10.23：贴边展开期间 TOPMOST 被丢/被其它置顶窗口
+    // 压住即补回；前台出现 DX 独占全屏时摘 TOPMOST 让位（与边条同策略）
+    if(IsWindowVisible() && GetStickEdge()!=0)
+        EnsureMainTopmost(!CEdgeBarWnd::IsForegroundFullScreen(m_hWnd));
     // 边条永久置顶维护：TOPMOST 被丢即补回；前台出现 DX 独占全屏时让位（退出全屏自动恢复）2026.10.22
     m_edgeBar.EnsureTopmost(!CEdgeBarWnd::IsForegroundFullScreen(m_hWnd));
     // 自愈：应用自身从不使用点击穿透/分层透明/禁止激活，若窗口被外部工具注入
@@ -1856,10 +1895,7 @@ LRESULT CQuickToolDlg::OnEdgeBarNotify(WPARAM wParam, LPARAM lParam){
             if(iY<0) iY=0;
             int iSH=GetScreenHeight();
             if(iY>iSH-rcWin.Height()) iY=iSH-rcWin.Height();
-            SetRedraw(FALSE);
-            SetWindowPos(&wndTop,iX,iY,rcWin.Width(),rcWin.Height(),SWP_NOACTIVATE|SWP_SHOWWINDOW|SWP_NOREDRAW);   // 临时置到普通层最前（不激活）2026.10.22
-            SetRedraw(TRUE);
-            RedrawWindow(NULL,NULL,RDW_INVALIDATE|RDW_ERASE|RDW_ALLCHILDREN|RDW_UPDATENOW);
+            ExpandAtEdge(iX,iY,rcWin.Width(),rcWin.Height());   // 置顶唤出（与状态机同路径，内含防闪）2026.10.23
         }
         m_edgeBar.HideBar();
         TrackMouseLeave();                  // 注册离窗检测，鼠标离开后自动收缩
@@ -1878,6 +1914,7 @@ void CQuickToolDlg::OnMouseLeave()
 {
     if(IsWindowVisible()){
         if(GetStickEdge()!=0){                          // 仅贴边状态收缩（左/右缘）2026.10.22
+            EnsureMainTopmost(FALSE);                   // 还原非置顶，不把唤出期的 TOPMOST 带进常态 2026.10.23
             ShowWindow(SW_HIDE);
             m_edgeBar.ShowBar();
         }

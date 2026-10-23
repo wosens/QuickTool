@@ -1,4 +1,4 @@
-﻿版本：v1.0.43
+﻿版本：v1.0.45
 
 
 
@@ -130,3 +130,5 @@
 
 [2026-10-23] 修"鼠标移到门把手窗口出不来"：运行中实例主窗口被外部自动化工具注入 WS_EX_LAYERED(alpha=1)+WS_EX_NOACTIVATE+WS_EX_TRANSPARENT（实测 GetLayeredWindowAttributes 返回 alpha=1，唤出逻辑本身正常执行、主窗口实际已显示但肉眼全透明，随后被判"鼠标离开"收回，表象即"把手在、窗口永远不出来"）；外部清位治愈当前实例后加固代码——OnTimer 自愈掩码由仅 WS_EX_TRANSPARENT 扩为 WS_EX_TRANSPARENT|WS_EX_LAYERED|WS_EX_NOACTIVATE（工程自身从不使用这三者），并改为无条件摘除（注入可发生在收缩隐藏期间，原 IsWindowVisible 条件会漏）+ OnEdgeBarNotify 唤出入口先摘再唤出，保证唤出即刻可见可交互；同步版本号 v1.0.42 - QuickToolDlg.cpp stdafx.h QuickTool.rc readme.txt
 [2026-10-23] 关于窗顶部两角圆角化：模板 DS_MODALFRAME 残留的 WS_EX_DLGMODALFRAME 直角外框包着 12px 圆角自绘卡片，观感突兀——OnInitDialog 新增 SetWindowRgn 窗口圆角外形，顶部两角与 OnPaint 卡片圆角裁剪同半径贴合（半径抽为共用常量 s_iAboutRound，两处永不脱节；区域高度外扩一个半径，底部两角保持直角外框不变）；同步版本号 v1.0.43 - QuickToolDlg.cpp stdafx.h QuickTool.rc readme.txt
+[2026-10-23] 贴边唤出置前双保险：修复唤出主窗口被其它软件窗口遮挡（ExpandAtEdge 唤出首选 TOPMOST、被环境拒绝时 HWND_TOP 兜底压普通层最前；EnsureMainTopmost 展开期 200ms 被压即顶回，收缩/未贴边还原非置顶；版本号 v1.0.44） - QuickToolDlg.cpp/QuickToolDlg.h/stdafx.h/QuickTool.rc
+[2026-10-23] 唤出改"激活置前"根治被普通窗口遮挡：用户复测 v1.0.44 主窗唤出仍被普通窗口遮挡，四组对照实验证实本机窗口管控对"不激活的纯 Z 序提升"（SWP_NOACTIVATE 的 SetWindowPos/TOPMOST/TOP）间歇性静默拦截——返回成功却不动 Z 序不进 TOPMOST，主窗停在普通层深处（实测 zpos≈86，上压 AutoCode/AweSun/FileClientTest 等普通窗口）；ExpandAtEdge 非全屏分支改为唤出即激活（去 SWP_NOACTIVATE + SetForegroundWindow，鼠标碰把手即使用意图、边条刚收到真实鼠标输入激活自身合法，激活由系统保证置前普通窗口不可能遮挡），TOPMOST 优先+HWND_TOP 兜底保留，DX 全屏让位分支维持不激活；同步版本号 v1.0.45 - QuickToolDlg.cpp stdafx.h QuickTool.rc readme.txt
